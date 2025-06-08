@@ -1,0 +1,115 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- GEREKLİ İZİNLER -->
+    <!-- İnternet bağlantısı için (connectivity_plus, url_launcher vb. için) -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Ağ durumunu kontrol etmek için (connectivity_plus için) -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
+    <!-- Android 13 (API 33) ve üzeri için Bildirim İzni -->
+    <!-- flutter_local_notifications ve flutter_background_service bildirimleri için zorunlu -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+
+    <!-- WorkManager için gerekli izinler -->
+    <!-- Cihaz uykudayken görevlerin çalışmasını sağlar -->
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <!-- Cihaz yeniden başlatıldığında görevlerin tekrar planlanmasını sağlar -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+
+    <!-- Foreground Service için gerekli izin -->
+    <!-- Arka plan servisi başlatmak için genel izin -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    
+    <!-- Android 14 (API 34) ve üzeri için, belirtilen foregroundServiceType ile eşleşen özel izin. -->
+    <!-- Eğer foregroundServiceType="dataSync" ise bu izni eklemeliyiz. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"/>
+    <!-- Eğer foregroundServiceType="mediaPlayback" olsaydı: <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/> -->
+    <!-- Diğer olası türler için de benzer izinler vardır. -->
+
+    <!-- Pil optimizasyonlarını yoksayma izni (opsiyonel ama faydalı) -->
+    <!-- Özellikle WorkManager veya uzun süreli arka plan servisleri için bazı cihazlarda faydalı olabilir. -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+
+    <application
+        android:label="myapp"
+        android:name="${applicationName}"
+        android:icon="@mipmap/ic_launcher">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:taskAffinity=""
+            android:theme="@style/LaunchTheme"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize">
+            <!-- Specifies an Android theme to apply to this Activity as soon as
+                 the Android process has started. This theme is visible to the user
+                 while the Flutter UI initializes. After that, this theme continues
+                 to determine the Window background behind the Flutter UI. -->
+            <meta-data
+              android:name="io.flutter.embedding.android.NormalTheme"
+              android:resource="@style/NormalTheme"
+              />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <!-- flutter_background_service için servis tanımı -->
+        <!-- DÜZELTME/DOĞRULAMA:
+             - android:name: Paketinizin doğru servis adını kullandığından emin olun.
+                             Loglarda gördüğünüz "id.flutter.flutter_background_service.BackgroundService" ise onu kullanın.
+                             Eğer "com.pravera.flutter_background_service.BackgroundService" doğruysa, bırakın.
+             - android:foregroundServiceType: Main.dart dosyanızdaki kullanım amacınıza göre seçin.
+                                             Örnek kodumuzda 'dataSync' genel arka plan işlemleri için daha uygun.
+                                             Eğer uygulamanız sadece müzik çalma gibi medya işleri yapmıyorsa 'dataSync' daha geneldir.
+        -->
+        <service
+            android:name="id.flutter.flutter_background_service.BackgroundService"
+            android:foregroundServiceType="dataSync" /> 
+            <!-- Veya eğer uygulamanız medya oynatma yapıyorsa: android:foregroundServiceType="mediaPlayback" -->
+
+        <!-- Don't delete the meta-data below.
+             This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
+    </application>
+
+    <!-- url_launcher'ın diğer uygulamaları sorgulayabilmesi için (Android 11 - API 30+) -->
+    <!-- Bu blok, uygulamanızın başka uygulamaları başlatıp başlatamayacağını belirtir. -->
+    <queries>
+        <!-- Text işleme için -->
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT"/>
+            <data android:mimeType="text/plain"/>
+        </intent>
+        <!-- SMS gönderme uygulamalarını sorgulamak için -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="sms" />
+        </intent>
+        <!-- E-posta uygulamalarını sorgulamak için -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="mailto" />
+        </intent>
+        <!-- Web tarayıcılarını sorgulamak için -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" />
+        </intent>
+        <!-- Telefon çeviriciyi sorgulamak için -->
+         <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="tel" />
+        </intent>
+        <!-- Harita uygulamalarını sorgulamak için (geo şeması) -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="geo" />
+        </intent>
+    </queries>
+</manifest>
